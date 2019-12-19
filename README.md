@@ -5,15 +5,15 @@
 Small test dataset for testing Vargas
 
 
-###Scaling Experiments (Section 3.1)
+### Scaling Experiments (Section 3.1)
 
 Generating graphs and read sets to test thread scaling on Knights Landing and Skylake architectures with SSE4.1, AVX2, and AVX512BW instruction sets
 
-###Heuristic Experiments (Section 3.2-3.3)
+### Heuristic Experiments (Section 3.2-3.3)
 
 Aligning reads with the scoring function of popular aligners to evaluate alignment correctness and mapping quality
 
 
-###Optimization Experiments (Section 4)
+### Optimization Experiments (Section 4)
 
 Optimizing Bowtie 2 parameters for aligning a dataset of ChIP-seq reads.
