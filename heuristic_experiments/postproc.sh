@@ -54,6 +54,15 @@ done
 
 sed -i 's/\*/-1/g' summary/bwamem.csv
 
+for i in `ls bwamem2/*.sam`; do
+	~/work2/cdarby/vargas/bin/vargas-keep convert -f "QNAME,FLAG,RNAME,POS,AS,XS,MAPQ,CIGAR" $i > ${i%.*}.csv
+	k=`echo "$i" | cut -d/ -f 2 | cut -d. -f 1`
+	sed "s/^/\"${k}\",/" < ${i%.*}.csv | sed 's/"//g' | python ${SCRIPTSDIR}/cigar2endpos.py 4 8 >> summary/bwamem2.csv
+	rm ${i%.*}.csv
+done
+
+sed -i 's/\*/-1/g' summary/bwamem2.csv
+
 for i in `ls ht2/*linear.sam`; do
         ~/work2/cdarby/vargas/bin/vargas convert -f "QNAME,FLAG,RNAME,POS,AS,XS,MAPQ,CIGAR" $i > ${i%.*}.csv
         mode=`echo "$i" | cut -d/ -f 2 | cut -d_ -f 1`

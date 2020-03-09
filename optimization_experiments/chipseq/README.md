@@ -55,7 +55,7 @@ vargas_realigned.sam
 ## 4. Evaluate correctness
 
 ```
-~/work2/cdarby/vargas/bin/vargas convert -f "QNAME,AS,mc,ss,sc,mp" vargas_realigned.sam | sort -V -t, -k1,1 | sed -i 's/"//g' > vargas.csv
+~/work2/cdarby/vargas/bin/vargas convert -f "QNAME,AS,mc,ss,sc,mp" vargas_realigned.sam | sort -V -t, -k1,1 | sed 's/"//g' > vargas.csv
 
 ~/work2/cdarby/vargas/bin/vargas convert -f "QNAME,FLAG,RNAME,POS,AS,XS,MAPQ,CIGAR" to_realign.sam | sed 's/"//g' | python ../scripts/cigar2endpos.py 3 7 | sort -V -t, -k1,1 > bt2.csv
 ```
@@ -95,13 +95,16 @@ cut -f1,18,10,11 vargas_realigned.sam | sed 's/AS:i://' | sort -k1,1 > vargas_sc
 cut -f1,5 -d, bt2.csv | tr , '\t' | sort -k1,1 | join -j1 - vargas_scores.tsv | awk '{print "@" $1 "_" $2 "_" $5 "\n" $3 "\n+\n" $4}' > scored_reads.fq
 ```
 
-Try different seed lengths - align the first 100,000 reads only.
+Try different seed lengths and DP-extension iterations - align the first 10,000 reads only.
 
 ```
-for SEED in `seq 12 2 32`; do ../../bin/time bowtie2 -x ~/data/resources/refdata-GRCh38-2.1.0/fasta/genome.fa -U scored_reads.fq -L ${SEED} -D 60 -u 100000 > params/l${SEED}d60.sam; done
-for SEED in `seq 12 2 32`; do python paramopt.py params/l${SEED}d60.sam; done
+for SEED in `seq 12 2 32`; do for EXTEND in 20 60 100; do ../../bin/time bowtie2 -x ~/data/resources/refdata-GRCh38-2.1.0/fasta/genome.fa -U scored_reads.fq -L ${SEED} -D ${EXTEND} -u 10000 > params/l${SEED}d${EXTEND}.sam; done; done
+for SEED in `seq 12 2 32`; do for EXTEND in 20 60 100; do python paramopt_bowtie2.py params/l${SEED}d${EXTEND}.sam; done; done
 ```
 
+Realign all reads with optimal parameters
+
+```
 ../../bin/time bowtie2 -x ~/data/resources/refdata-GRCh38-2.1.0/fasta/genome.fa -U to_realign.fq -L 14 -D 100 > bt2_l14d100.sam
 570789 reads; of these:
   570789 (100.00%) were unpaired; of these:
@@ -111,4 +114,4 @@ for SEED in `seq 12 2 32`; do python paramopt.py params/l${SEED}d60.sam; done
 76.42% overall alignment rate
 961.04user 31.13system 16:33.93elapsed 99%CPU (0avgtext+0avgdata 3381596maxresident)k
 99552inputs+194528outputs (0major+20955955minor)pagefaults 0swaps
-
+```

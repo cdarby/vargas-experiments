@@ -49,6 +49,15 @@ ${TIMEPG} ${BWAPG} mem ${BWAIDX} ${READS} 2> ${OUTPUT}/bwamem/k19.log | ${SAMTOO
 ${TIMEPG} ${BWAPG} mem -k 22 -r 3 ${BWAIDX} ${READS} 2> ${OUTPUT}/bwamem/k22r3.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem/k22r3.sam
 ${TIMEPG} ${BWAPG} mem -k 25 -r 4 ${BWAIDX} ${READS} 2> ${OUTPUT}/bwamem/k25r4.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem/k25r4.sam
 
+BWA2PG=/home-1/cdarby3@jhu.edu/bwa-mem2-2.0pre2_x64-linux/bwa-mem2
+BWA2IDX=/work-zfs/mschatz1/resources/refdata-GRCh38-2.1.0/fasta/bwamem2.genome.fa
+mkdir ${OUTPUT}/bwamem2
+
+${TIMEPG} ${BWA2PG} mem -k 16 -r 1.2 ${BWA2IDX} ${READS} 2> ${OUTPUT}/bwamem2/k16r12.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem2/k16r12.sam  
+${TIMEPG} ${BWA2PG} mem ${BWA2IDX} ${READS} 2> ${OUTPUT}/bwamem2/k19.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem2/k19.sam
+${TIMEPG} ${BWA2PG} mem -k 22 -r 3 ${BWA2IDX} ${READS} 2> ${OUTPUT}/bwamem2/k22r3.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem2/k22r3.sam
+${TIMEPG} ${BWA2PG} mem -k 25 -r 4 ${BWA2IDX} ${READS} 2> ${OUTPUT}/bwamem2/k25r4.log | ${SAMTOOLSPG} view -h -F 2048 > ${OUTPUT}/bwamem2/k25r4.sam
+
 # bwa aln
 
 mkdir ${OUTPUT}/bwaaln
@@ -95,5 +104,5 @@ VGGRAPHINDEX=/scratch/groups/blangme2/cdarby/vg_graphs/maf10
 VGSCORING=/scratch/groups/blangme2/cdarby/npenalty.mat
 mkdir ${OUTPUT}/vg
 
-${TIMEPG} ${VGPG} map -d ${VGLINEARINDEX} -f ${READS} --score-matrix ${VGSCORING} -L 0 -t 1 -o 7 > ${OUTPUT}/vg/linear.tsv 2> ${OUTPUT}/vg/linear.log
-${TIMEPG} ${VGPG} map -d ${VGGRAPHINDEX} -f ${READS} --score-matrix ${VGSCORING} -L 0 -t 1 -o 7 > ${OUTPUT}/vg/graph.tsv 2> ${OUTPUT}/vg/graph.log
+${TIMEPG} ${VGPG} map -d ${VGLINEARINDEX} -f ${READS} --score-matrix ${VGSCORING} -L 0 -t 1 -o 7 --refpos-table > ${OUTPUT}/vg/linear.tsv 2> ${OUTPUT}/vg/linear.log
+${TIMEPG} ${VGPG} map -d ${VGGRAPHINDEX} -f ${READS} --score-matrix ${VGSCORING} -L 0 -t 1 -o 7 --refpos-table > ${OUTPUT}/vg/graph.tsv 2> ${OUTPUT}/vg/graph.log
